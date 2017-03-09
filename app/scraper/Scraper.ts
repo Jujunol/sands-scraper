@@ -25,7 +25,14 @@ export class Scraper {
                 return;
             }
 
-            console.log(body);
+            const json: ScrapeResponse = JSON.parse(body);
+            const stats: number[] = json.stats["24h"];
+
+            console.log(stats);
         })
     }
+}
+
+interface ScrapeResponse {
+    stats: Object,
 }
