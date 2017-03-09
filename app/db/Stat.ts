@@ -6,29 +6,42 @@ import {DB, Query} from './DB';
  */
 export class Stat {
 
-    constructor(unix: number, traffic: number) {
-        const time: moment.Moment = moment(unix);
-        const date: string = time.format();
-        const hour: number = +time.format('HH');
+    private static queue: StatType[] = [];
 
-        this.self()
-            .insert({
-                date: date,
-                hour: hour,
-                unix: unix,
-                traffic: traffic,
-            })
-            .catch(err => console.error(err));
-    }
-
-    private self(): Query {
+    private static self(): Query {
         return DB('stat');
     }
 
-    latest(): Query {
-        return this.self()
+    static latest(): Query {
+        return Stat.self()
             .orderBy('unix', 'desc')
             .limit(1);
     }
 
+    static create(unix: number, traffic: number): void {
+        const time: moment.Moment = moment.unix(unix).utc();
+        const date: string = time.format();
+        const hour: number = +time.format('HH');
+
+        Stat.queue.push({
+            date: date,
+            hour: hour,
+            unix: unix,
+            traffic: traffic,
+        })
+    }
+
+    static saveQueue(): void {
+        Stat.self().insert(this.queue)
+            .catch(err => console.error(err));
+        this.queue = [];
+    }
+
+}
+
+interface StatType {
+    date: string,
+    hour: number,
+    unix: number,
+    traffic: number,
 }

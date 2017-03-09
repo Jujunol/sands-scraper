@@ -1,4 +1,5 @@
 import {get} from 'request';
+import {Stat} from "../db/Stat";
 
 /**
  * Created by Juju on 08/03/2017.
@@ -28,7 +29,25 @@ export class Scraper {
             const json: ScrapeResponse = JSON.parse(body);
             const stats: number[] = json.stats["24h"];
 
-            console.log(stats);
+            Stat.latest().first().then(stat => {
+                console.log(stat);
+                let iter: number = 0;
+                let unix: number = stat ? stat.unix : 0;
+
+                console.log("About to loop", {
+                    iter,
+                    unix,
+                    length: stats.length,
+                    target: stats[iter],
+                });
+
+                while(iter < stats.length - 1 && stats[iter][0] <= unix) { iter++; }
+                for(; iter < stats.length - 1; iter++) {
+                    Stat.create(stats[iter][0], stats[iter][1]);
+                }
+
+                Stat.saveQueue();
+            });
         })
     }
 }
