@@ -6,9 +6,7 @@ import * as bodyParser from 'body-parser';
 import * as env from 'dotenv';
 import * as session from 'express-session';
 import * as errorHandler from 'errorhandler';
-import * as nunjucks from 'nunjucks';
-
-import {IndexRoute} from './routes/IndexRoute';
+import {Scraper} from "./scraper/Scraper";
 
 export class Server {
 
@@ -21,20 +19,13 @@ export class Server {
     constructor() {
         this.app = express();
         this.config();
-        this.routes();
+        this.updaters();
     }
 
     config() {
         env.config();  // loads .env file if exists
 
         this.app.use(express.static(path.join(path.dirname(__dirname), 'public')));
-        this.app.engine('njk', nunjucks.render);
-        this.app.set('view engine', 'njk');
-        nunjucks.configure(path.join(path.dirname(__dirname), 'views'), {
-            autoescape: true,
-            express: this.app,
-        })
-
         this.app.use(logger('dev'));
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({ extended: true }));
@@ -55,12 +46,7 @@ export class Server {
         this.app.use(errorHandler());
     }
 
-    routes() {
-        [
-            new IndexRoute(),
-        ].forEach((route) => {
-            this.app.use(route.basePath, route.router);
-        })
+    private updaters() {
+        new Scraper(process.env.scrape_url, process.env.scrape_token, process.env.scrape_timeout);
     }
-
 }
