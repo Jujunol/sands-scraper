@@ -22,3 +22,5 @@ export function DBConnection() {
 export function DB(table: string): knex.QueryBuilder {
     return DBConnection()(table);
 }
+
+export type Query = knex.QueryBuilder;
