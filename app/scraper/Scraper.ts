@@ -8,14 +8,16 @@ export class Scraper {
 
     private url: string;
     private token: string;
+    private interval: number;
+    private errorInterval: number = 1000 * 60;
 
     constructor(url: string, token: string, interval: number) {
         if(!url || !token || !interval) { throw "Missing Scraping params"; }
 
         this.url = url;
         this.token = token;
+        this.interval = interval;
 
-        setTimeout(() => this.scrapeSite(), interval);
         this.scrapeSite();
     }
 
@@ -23,6 +25,7 @@ export class Scraper {
         get(this.url, { auth: { bearer: this.token } }, (err, res, body) => {
             if(err) {
                 console.error(err);
+                setTimeout(() => this.scrapeSite(), this.errorInterval);
                 return;
             }
 
@@ -47,6 +50,7 @@ export class Scraper {
                 }
 
                 Stat.saveQueue();
+                setTimeout(() => this.scrapeSite(), this.interval);
             });
         })
     }
