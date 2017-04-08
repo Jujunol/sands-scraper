@@ -32,7 +32,7 @@
     "morgan": "^1.6.1",
     "pump": "^1.0.2",
     "request": "^2.80.0",
-    "typescript": "^2.1.6",
+    "typescript": "^2.1.6"
   },
   "description": "Basic template with typescript for nodejs ",
   "main": "server.js",
