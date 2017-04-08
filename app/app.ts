@@ -44,9 +44,11 @@ export class Server {
     }
 
     private updateDatabase(): void {
+        console.log("Checking migrations");
         DBConnection().schema.dropTableIfExists('knex_migrations_lock')
-            .then(any => DBConnection().migrate.latest())
-            .catch(err => console.error(err))
+            .then(any => DBConnection().migrate.latest()
+                .then(any => console.log("Migration complete")))
+            .catch(console.error)
     }
 
     private updaters() {
