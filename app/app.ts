@@ -1,7 +1,6 @@
 import * as express from 'express';
 import * as path from 'path';
 import * as logger from 'morgan';
-import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
 import * as env from 'dotenv';
 import * as session from 'express-session';
@@ -29,7 +28,6 @@ export class Server {
         this.app.use(logger('dev'));
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({ extended: true }));
-        this.app.use(cookieParser());
 
         this.app.use(session({
             secret: process.env.app_secret,
