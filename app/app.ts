@@ -5,6 +5,7 @@ import * as bodyParser from 'body-parser';
 import * as env from 'dotenv';
 import * as session from 'express-session';
 import * as errorHandler from 'errorhandler';
+import {DBConnection} from "./db/DB";
 import {Scraper} from "./scraper/Scraper";
 
 export class Server {
@@ -42,6 +43,12 @@ export class Server {
         });
 
         this.app.use(errorHandler());
+    }
+
+    private updateDatabase(): void {
+        DBConnection().schema.dropTableIfExists('knex_migrations_lock')
+            .then(any => DBConnection().migrate.latest())
+            .catch(err => console.error(err))
     }
 
     private updaters() {
