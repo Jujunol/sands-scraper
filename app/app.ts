@@ -2,7 +2,6 @@ import * as express from 'express';
 import * as path from 'path';
 import * as logger from 'morgan';
 import * as bodyParser from 'body-parser';
-import * as env from 'dotenv';
 import * as session from 'express-session';
 import * as errorHandler from 'errorhandler';
 import {DBConnection} from "./db/DB";
@@ -24,8 +23,6 @@ export class Server {
     }
 
     config() {
-        env.config();  // loads .env file if exists
-
         this.app.use(express.static(path.join(path.dirname(__dirname), 'public')));
         this.app.use(logger('dev'));
         this.app.use(bodyParser.json());
