@@ -9,7 +9,7 @@ export class Stat {
     private static queue: StatType[] = [];
 
     private static self(): Query {
-        return DB('stat');
+        return DB.table('stat');
     }
 
     static latest(): Query {
@@ -33,8 +33,11 @@ export class Stat {
 
     static saveQueue(): void {
         Stat.self().insert(this.queue)
-            .catch(err => console.error(err));
-        this.queue = [];
+            .then(model => this.queue = [])
+            .catch(err => {
+                console.error(err);
+                setTimeout(() => this.saveQueue(), 500);
+            });
     }
 
 }
